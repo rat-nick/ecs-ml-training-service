@@ -2,7 +2,7 @@ import pandas as pd
 import random
 from optparse import OptionParser
 
-# TODO: function to get a random subset of rows from a .csv as dataframe
+
 def fragment(fpath, fragment_size):
     content = pd.read_csv(fpath, header=0)
     n = len(content)
@@ -13,5 +13,15 @@ def fragment(fpath, fragment_size):
 
 #TODO: function to create n random fragments of a file
 
-#TODO: create module entry
-    
+parser = OptionParser()
+#parser.add_option("-i", "--input", dest="input", default='stdin', help="input file", metavar="FILE")
+parser.add_option("-p", "--prefix", dest="prefix", default="fragment", help="prefix", metavar="STRING")
+parser.add_option("-f", "--fragments", dest="fragments",default=1, help="number of fragments", metavar="INT")
+parser.add_option("-s", "--size", dest="size",default=5, help="size of fragments", metavar="INT")
+parser.add_option("-o", "--outdir", dest="outdir", default='.', help="size of fragments", metavar="INT")
+(options, args) = parser.parse_args()
+
+for arg in args:
+    for i in range(int(options.fragments)):
+        df = fragment(arg, int(options.size))
+        df.to_csv(f'{options.outdir}/{arg}.{options.prefix}{i}.csv')
