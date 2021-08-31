@@ -15,7 +15,6 @@ upload_parser.add_argument('file', location='files', type=FileStorage, required=
 @api.expect(upload_parser)
 class Model(Resource):
     def post(self):
-        
         # parse the file in the request
         args = upload_parser.parse_args()
         file = args['file']
@@ -25,18 +24,21 @@ class Model(Resource):
         try:
             model = train(df, ['medv', 'nox'])
             serialized_model = serialize(model)
+            id = hash(serialized_model)
+            
             return {
-                'message': 'POST success',
+                'id' : id,
                 'serializedModel' : serialized_model,
                 'status': 201,
             }
         except Exception as e:
             print(e)
+            
             return {
                 'message': 'POST failed',
-                'status': 500
-                
+                'status': 500  
             }
+
 
 @api.route('/predict/<int:id>')
 class Prediction(Resource):
