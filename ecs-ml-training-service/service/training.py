@@ -2,6 +2,7 @@ from pandas.core.frame import DataFrame
 from sklearn.tree import DecisionTreeRegressor
 from typing import List
 
+
 def train(data: DataFrame, response_vars: List[str]) -> DecisionTreeRegressor:
     # split response and predictor vars
     y = data[response_vars]
@@ -10,6 +11,5 @@ def train(data: DataFrame, response_vars: List[str]) -> DecisionTreeRegressor:
     # create and fit the model to the data
     model = DecisionTreeRegressor()
     model.fit(X, y)
-    
+
     return model
-    
