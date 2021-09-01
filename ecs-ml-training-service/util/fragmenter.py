@@ -1,6 +1,8 @@
 import pandas as pd
 import random
 from optparse import OptionParser
+from pathlib import Path
+import ntpath
 
 
 def fragment(fpath, fragment_size):
@@ -12,12 +14,15 @@ def fragment(fpath, fragment_size):
     return df
 
 
-# TODO: function to create n random fragments of a file
-
 parser = OptionParser()
-# parser.add_option("-i", "--input", dest="input", default='stdin', help="input file", metavar="FILE")
+
 parser.add_option(
-    "-p", "--prefix", dest="prefix", default="fragment", help="prefix", metavar="STRING"
+    "-p",
+    "--prefix",
+    dest="prefix",
+    default="fragment",
+    help="prefix",
+    metavar="STRING",
 )
 parser.add_option(
     "-f",
@@ -28,7 +33,12 @@ parser.add_option(
     metavar="INT",
 )
 parser.add_option(
-    "-s", "--size", dest="size", default=5, help="size of fragments", metavar="INT"
+    "-s",
+    "--size",
+    dest="size",
+    default=5,
+    help="size of fragments",
+    metavar="INT",
 )
 parser.add_option(
     "-o",
@@ -40,7 +50,9 @@ parser.add_option(
 )
 (options, args) = parser.parse_args()
 
+Path(options.outdir).mkdir(parents=False, exist_ok=True)
 for arg in args:
     for i in range(int(options.fragments)):
         df = fragment(arg, int(options.size))
-        df.to_csv(f"{options.outdir}/{arg}.{options.prefix}{i}.csv")
+        basename = ntpath.basename(arg)
+        df.to_csv(f"{options.outdir}/{basename}.{options.prefix}{i}.csv")
