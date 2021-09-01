@@ -48,6 +48,16 @@ parser.add_option(
     help="size of fragments",
     metavar="INT",
 )
+
+parser.add_option(
+    "-r",
+    "--overwrite-name",
+    dest="overwrite",
+    default=False,
+    action="store_true",
+    help="whether to overwrite the name with the prefix",
+    metavar="BOOL",
+)
 (options, args) = parser.parse_args()
 
 Path(options.outdir).mkdir(parents=False, exist_ok=True)
@@ -55,4 +65,9 @@ for arg in args:
     for i in range(int(options.fragments)):
         df = fragment(arg, int(options.size))
         basename = ntpath.basename(arg)
-        df.to_csv(f"{options.outdir}/{basename}.{options.prefix}{i}.csv")
+        filename = (
+            f"{options.prefix}{i}.csv"
+            if options.overwrite
+            else f"{options.prefix}{i}.{basename}.csv"
+        )
+        df.to_csv(f"{options.outdir}/{filename}")
