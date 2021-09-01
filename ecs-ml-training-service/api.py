@@ -1,9 +1,9 @@
 import pickle
 from flask import Flask
-from service.storage import write, read
+from services.storage import write, read
 from flask_restx import Resource, Api
 from werkzeug.datastructures import FileStorage
-from service.training import train
+from services.training import train
 import pandas as pd
 
 app = Flask(__name__)
