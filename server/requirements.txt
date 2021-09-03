@@ -1,0 +1,5 @@
+sklearn
+Flask
+flask-restx
+pandas
+boto3
