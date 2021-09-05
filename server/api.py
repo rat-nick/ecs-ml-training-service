@@ -19,6 +19,13 @@ upload_parser.add_argument(
 )
 
 
+@api.route("/probe")
+@api.hide
+class Probe(Resource):
+    def get(self):
+        return {"status": 200, "message": "probe successful"}
+
+
 @api.route("/model")
 @api.expect(upload_parser)
 class Model(Resource):
