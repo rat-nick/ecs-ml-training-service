@@ -1,14 +1,17 @@
 import pickle
+from services.serialization import serialize
 from flask import Flask
-from services.storage import write, read
+from services.storage import read
 from flask_restx import Resource, Api
 from werkzeug.datastructures import FileStorage
 from services.training import train
 import pandas as pd
+import config
 
 app = Flask(__name__)
 api = Api(app)
 
+app.config.from_object(config)
 
 upload_parser = api.parser()
 upload_parser.add_argument(
@@ -40,8 +43,7 @@ class Model(Resource):
             # train the model
             model = train(df, ["medv", "nox"])
             outfile = f"{file.filename.split('.')[0]}.mod"
-            write(model, outfile)
-            return {"status": 200}
+            return serialize(model, outfile)
         except Exception as e:
             print(e)
 
@@ -79,4 +81,4 @@ class Prediction(Resource):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(port=config.PORT)
