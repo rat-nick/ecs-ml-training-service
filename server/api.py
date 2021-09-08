@@ -83,4 +83,4 @@ class Prediction(Resource):
 
 
 if __name__ == "__main__":
-    app.run(port=config.PORT)
+    app.run(port=config.PORT, host=config.HOST)
