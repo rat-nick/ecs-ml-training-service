@@ -1,4 +1,4 @@
-ENV = "development"
-PORT = "8000"
+ENV = "production"
+PORT = "80"
 HOST = "0.0.0.0"
 DEBUG = True
