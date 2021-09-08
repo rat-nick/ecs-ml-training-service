@@ -7,8 +7,10 @@ from werkzeug.datastructures import FileStorage
 from services.training import train
 import pandas as pd
 import config
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 app.config.from_object(config)
