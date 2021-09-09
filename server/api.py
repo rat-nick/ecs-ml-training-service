@@ -1,14 +1,15 @@
 import pickle
 from services.serialization import serialize
 from flask import Flask
-from services.storage import read
 from flask_restx import Resource, Api
 from werkzeug.datastructures import FileStorage
 from services.training import train
 import pandas as pd
 import config
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 app.config.from_object(config)
@@ -52,23 +53,31 @@ class Model(Resource):
 
 upload_parser = api.parser()
 upload_parser.add_argument(
-    "file",
+    "var_file",
+    location="files",
+    type=FileStorage,
+    required=True,
+)
+
+upload_parser.add_argument(
+    "model_file",
     location="files",
     type=FileStorage,
     required=True,
 )
 
 
-@api.route("/predict/<string:key>")
+@api.route("/predict")
 @api.expect(upload_parser)
 class Prediction(Resource):
-    def post(self, key):
+    def post(self):
         args = upload_parser.parse_args()
-        file = args["file"]
-        inputs = pd.read_csv(file).to_numpy()
+        var_file = args["var_file"]
+        model_file = args["model_file"]
+        inputs = pd.read_csv(var_file).to_numpy()
 
         try:
-            model = pickle.loads(read(key))
+            model = pickle.load(model_file)
             predictions = model.predict(inputs)
             return {
                 "status": 200,
@@ -81,4 +90,4 @@ class Prediction(Resource):
 
 
 if __name__ == "__main__":
-    app.run(port=config.PORT)
+    app.run(port=config.PORT, host=config.HOST)
