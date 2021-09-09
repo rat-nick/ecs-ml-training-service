@@ -51,15 +51,15 @@ class Model(Resource):
             return {"message": "POST failed", "status": 500}
 
 
-upload_parser = api.parser()
-upload_parser.add_argument(
+predict_parser = api.parser()
+predict_parser.add_argument(
     "var_file",
     location="files",
     type=FileStorage,
     required=True,
 )
 
-upload_parser.add_argument(
+predict_parser.add_argument(
     "model_file",
     location="files",
     type=FileStorage,
@@ -68,10 +68,10 @@ upload_parser.add_argument(
 
 
 @api.route("/predict")
-@api.expect(upload_parser)
+@api.expect(predict_parser)
 class Prediction(Resource):
     def post(self):
-        args = upload_parser.parse_args()
+        args = predict_parser.parse_args()
         var_file = args["var_file"]
         model_file = args["model_file"]
         inputs = pd.read_csv(var_file).to_numpy()
