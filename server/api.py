@@ -1,9 +1,11 @@
 import pickle
+import numpy as np
 from services.serialization import serialize
 from flask import Flask
 from flask_restx import Resource, Api
 from werkzeug.datastructures import FileStorage
 from services.training import train
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 import pandas as pd
 import config
 from flask_cors import CORS
@@ -74,16 +76,35 @@ class Prediction(Resource):
         args = predict_parser.parse_args()
         var_file = args["var_file"]
         model_file = args["model_file"]
+        # split data into input and response vars
         inputs = pd.read_csv(var_file, index_col=0)
+        medv = inputs["medv"]
+        nox = inputs["nox"]
         predictor_cols = inputs.columns.difference(["medv", "nox"])
         inputs = inputs[predictor_cols].to_numpy()
 
         try:
             model = pickle.load(model_file)
-            predictions = model.predict(inputs)
+            predictions = model.predict(inputs).tolist()
+            y_true = np.array([medv, nox]).transpose()
+
+            mae = mean_absolute_error(
+                y_true,
+                predictions,
+                multioutput=[1, 0],
+            )
+
+            mse = mean_squared_error(
+                y_true,
+                predictions,
+                multioutput=[1, 0],
+            )
+
             return {
                 "status": 200,
-                "predictions": predictions.tolist(),
+                "predictions": predictions,
+                "MAE": mae,
+                "MSE": mse,
             }
 
         except Exception as e:
