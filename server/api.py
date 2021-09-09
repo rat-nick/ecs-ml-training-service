@@ -14,8 +14,8 @@ api = Api(app)
 
 app.config.from_object(config)
 
-upload_parser = api.parser()
-upload_parser.add_argument(
+train_parser = api.parser()
+train_parser.add_argument(
     "file",
     location="files",
     type=FileStorage,
@@ -30,12 +30,12 @@ class Probe(Resource):
         return {"status": 200, "message": "probe successful"}
 
 
-@api.route("/model")
-@api.expect(upload_parser)
+@api.route("/train")
+@api.expect(train_parser)
 class Model(Resource):
     def post(self):
         # parse the file in the request
-        args = upload_parser.parse_args()
+        args = train_parser.parse_args()
         file = args["file"]
         df = pd.read_csv(file)
         # remove Unnamed columns
