@@ -74,7 +74,9 @@ class Prediction(Resource):
         args = predict_parser.parse_args()
         var_file = args["var_file"]
         model_file = args["model_file"]
-        inputs = pd.read_csv(var_file).to_numpy()
+        inputs = pd.read_csv(var_file, index_col=0)
+        predictor_cols = inputs.columns.difference(["medv", "nox"])
+        inputs = inputs[predictor_cols].to_numpy()
 
         try:
             model = pickle.load(model_file)
